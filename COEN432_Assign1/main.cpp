@@ -41,14 +41,14 @@ int main(int argc, const char * argv[]) {
     //This first part is to extract data out of the input files
     srand(time(NULL));
     ifstream SettingsFile;
-    ifstream GuestsFile("/Users/Felix/school/University/Winter_2018/COEN432/COEN432_Assign1/COEN432_Assign1/preferences1.csv");
+    ifstream GuestsFile("/Users/Felix/school/University/Winter_2018/COEN432/COEN432Assignment1/COEN432_Assign1/preferences1.csv");
     int NumGuests = 0; // Number of guests
     int TableSize = 0; // Size of the tables
     int NumTables = 0; // Number of tables
     vector <vector<int>> GuestPrefTable; // A table that will contain the preferences of each guest -> the Preference Table
     
     //Get settings information from the text file
-    SettingsFile.open("/Users/Felix/school/University/Winter_2018/COEN432/COEN432_Assign1/COEN432_Assign1/settings.txt");
+    SettingsFile.open("/Users/Felix/school/University/Winter_2018/COEN432/COEN432Assignment1/COEN432_Assign1/settings.txt");
     SettingsFile >> TableSize >> NumGuests;
     SettingsFile.close();
     
@@ -60,7 +60,7 @@ int main(int argc, const char * argv[]) {
     //Displays Settings Information
     cout << "Table Size is: " << TableSize << endl;
     cout << "Number of guests are: " << NumGuests << endl;
-    cout << " Number of tables are: " << NumTables << endl;
+    cout << "Number of tables are: " << NumTables << endl;
     cout << endl;
     
     string Value;
@@ -311,7 +311,7 @@ int main(int argc, const char * argv[]) {
     
     // Outputing best solution of all generations to the output.csv file
     ofstream OutputFile;
-    OutputFile.open ("/Users/Felix/school/University/Winter_2018/COEN432/COEN432_Assign1/COEN432_Assign1/output.csv");
+    OutputFile.open ("/Users/Felix/school/University/Winter_2018/COEN432/COEN432Assignment1/COEN432_Assign1/output.csv");
     vector<vector<int>> FinalSolutionVector = BestIndividualOfAllGen.GetIndividual();
     OutputFile << "Displaying Solution of Generation " << GenerationNum << '\n';
     OutputFile << "Guest, Table#, Seat#\n";
@@ -323,6 +323,7 @@ int main(int argc, const char * argv[]) {
         }
     }
     OutputFile << "Fitness of this solution is " << BestIndividualOfAllGen.GetFitness() << '\n';
+    OutputFile.close();
     return 0;
 }
 
