@@ -41,14 +41,17 @@ int main(int argc, const char * argv[]) {
     //This first part is to extract data out of the input files
     srand(time(NULL));
     ifstream SettingsFile;
-    ifstream GuestsFile("/Users/Felix/school/University/Winter_2018/COEN432/COEN432Assignment1/COEN432_Assign1/preferences1.csv");
-    int NumGuests = 0; // Number of guests
-    int TableSize = 0; // Size of the tables
-    int NumTables = 0; // Number of tables
+    string OutputLocation       = "/Users/Felix/school/University/Winter_2018/COEN432/COEN432Assignment1/COEN432_Assign1/output.csv";
+    string PreferenceLocation   = "/Users/Felix/school/University/Winter_2018/COEN432/COEN432Assignment1/COEN432_Assign1/preferences2.csv";
+    string SettingsLocation     = "/Users/Felix/school/University/Winter_2018/COEN432/COEN432Assignment1/COEN432_Assign1/settings.txt";
+    ifstream GuestsFile(PreferenceLocation);
+    int NumGuests = 0;// Number of guests
+    int TableSize = 0;// Size of the tables
+    int NumTables = 0;// Number of tables
     vector <vector<int>> GuestPrefTable; // A table that will contain the preferences of each guest -> the Preference Table
     
     //Get settings information from the text file
-    SettingsFile.open("/Users/Felix/school/University/Winter_2018/COEN432/COEN432Assignment1/COEN432_Assign1/settings.txt");
+    SettingsFile.open(SettingsLocation);
     SettingsFile >> TableSize >> NumGuests;
     SettingsFile.close();
     
@@ -310,9 +313,14 @@ int main(int argc, const char * argv[]) {
     cout << endl;
     
     // Outputing best solution of all generations to the output.csv file
-    ofstream OutputFile;
-    OutputFile.open ("/Users/Felix/school/University/Winter_2018/COEN432/COEN432Assignment1/COEN432_Assign1/output.csv");
     vector<vector<int>> FinalSolutionVector = BestIndividualOfAllGen.GetIndividual();
+    // Safety catch, so that program can end
+    if (FinalSolutionVector.size() == 0)
+        return 0;
+    
+    ofstream OutputFile;
+    OutputFile.open(OutputLocation);
+    
     OutputFile << "Displaying Solution of Generation " << GenerationNum << '\n';
     OutputFile << "Guest, Table#, Seat#\n";
     for (int Table = 0; Table<NumTables; Table++){
