@@ -24,17 +24,13 @@ using namespace std;
         -> Select New Parents from children
         -> Repeat Implementing Crossover and mutation Fitness = 0;
         -> Display best solution.
- 
- 
- 
-
  */
-//todo: fix case when there are empty seats in a solution
 
 vector<Individual> ParentSelection(vector<Individual>, int);
 Individual Crossover(Individual, Individual, vector<vector<int>>, int, int, int);
 Individual Mutation(Individual, vector<vector<int>>, int, int, int);
 vector<Individual> SurvivorSelection(vector<Individual>, int, int, int, int);
+int DiversityBetweenTwoIndividuals(Individual, Individual, int, int, int);
 
 int main(int argc, const char * argv[]) {
 //========================================================================================================//
@@ -143,7 +139,7 @@ int main(int argc, const char * argv[]) {
     int InitialPopulationSize = 500;
     int GenerationNum = 0;
     
-    for(;GenerationNum<400;GenerationNum++){
+    for(;GenerationNum<200;GenerationNum++){
         // Generating initial population and evaluation their fitness
         for (int i=0; i<InitialPopulationSize; i++){
         Individual individual(NumGuests, NumTables, TableSize);
@@ -172,7 +168,7 @@ int main(int argc, const char * argv[]) {
         
         //---------------Parents Selection process---------------//
         vector<Individual> Parent_Pool;
-        int ParentPoolSize = 0.3*InitialPopulationSize;
+        int ParentPoolSize = 0.5*InitialPopulationSize;
         
         Parent_Pool = ParentSelection(InitialPopulation, ParentPoolSize);
         //Displaying Selected parents for Crossover
@@ -507,4 +503,117 @@ vector<Individual> SurvivorSelection(vector<Individual> NewPopulation, int NumbG
     
     return SurvivingPopulation;
 }
+
+Individual Crowding( Individual Parent, Individual Child, int NumGuests, int NumTables, int TableSize){
+    
+    
+    return Child;
+}
+int DiversityBetweenTwoIndividuals(Individual Individual1, Individual Individual2, int NumGuests, int NumTables, int TableSize){
+    vector<vector<int>> SolutionInd1, SolutionInd2;
+    SolutionInd1        = Individual1.GetIndividual();
+    SolutionInd2        = Individual2.GetIndividual();
+    int Diversity       = 0;
+    int Guest1Table     = 0;
+    int Guest1Seat      = 0;
+    int Guest2Table     = 0;
+    int Guest2Seat      = 0;
+    
+
+    for (int guest = 1; guest<=NumGuests; guest++){
+        bool SeatingMatched = false;
+        int PositionMatched = 0;// 0 for NextToR, 1 for NextToL
+        // Retrieving the position[Table][Seat] of the guest from both solution
+        for (int Table=0; Table<NumTables;Table++){
+            for (int Seat = 0; Seat<TableSize; Seat++){
+                if (SolutionInd1[Table][Seat] == guest){
+                    Guest1Table = Table;
+                    Guest1Seat  = Seat;
+                }
+                if (SolutionInd2[Table][Seat] == guest){
+                    Guest2Table = Table;
+                    Guest2Seat  = Seat;
+                }
+            }
+        }
+        // Will be used to check what guests are seated to the left and right of the current guest
+        int Guest1SeatRight = 0;
+        int Guest1SeatLeft  = 0;
+        int Guest2SeatRight = 0;
+        int Guest2SeatLeft  = 0;
+        
+        // Corner Case for guest1: Guest 1 is sitting on the last seat
+        if (Guest1Seat + 1 == TableSize){
+            Guest1SeatRight = 0;
+            Guest1SeatLeft  = Guest1Seat - 1;
+            }
+        
+        // Corner Case for guest1: Guest1 is sitting on the first seat
+        else if (Guest1Seat == 0){
+            Guest1SeatRight = Guest1Seat + 1;
+            Guest1SeatLeft  = TableSize - 1;
+        }
+        else {
+            Guest1SeatRight = Guest1Seat + 1;
+            Guest1SeatLeft  = Guest1Seat - 1;
+        }
+        // Corner Case for guest2: Guest 2 is sitting on the last seat
+        if (Guest2Seat + 1 == TableSize){
+            Guest2SeatRight = 0;
+            Guest2SeatLeft  = Guest2Seat - 1;
+        }
+        // Corner Case for guest2: Guest2 is sitting on the first seat
+        else if (Guest2Seat == 0){
+            Guest2SeatRight = Guest2Seat + 1;
+            Guest2SeatLeft  = TableSize - 1;
+        }
+        else {
+            Guest2SeatRight = Guest2Seat + 1;
+            Guest2SeatLeft  = Guest2Seat - 1;
+        }
+        // Checking if the seats to the Left and Right of Guest1 are the same in both solutions
+        if (SolutionInd1[Guest1Table][Guest1SeatRight] != SolutionInd2[Guest2Table][Guest2SeatRight] &&
+            SolutionInd1[Guest1Table][Guest1SeatLeft]  != SolutionInd2[Guest2Table][Guest2SeatLeft]){
+            Diversity++;
+        }
+        else
+            SeatingMatched = true;
+        
+        if (SolutionInd1[Guest1Table][Guest1SeatRight] != SolutionInd2[Guest2Table][Guest2SeatRight])
+            PositionMatched = 0;
+        else
+            PositionMatched = 1;
+        
+        if (!SeatingMatched){
+            if (SolutionInd1[Guest1Table][Guest1SeatLeft] != SolutionInd2[Guest2Table][Guest2SeatRight] &&
+                SolutionInd1[Guest1Table][Guest1SeatRight] != SolutionInd2[Guest2Table][Guest2SeatLeft])
+                Diversity++;
+        }
+        else{
+            if (!PositionMatched && (SolutionInd1[Guest1Table][Guest1SeatRight] != SolutionInd2[Guest2Table][Guest2SeatLeft]))
+                Diversity++;
+            else if (PositionMatched && (SolutionInd1[Guest1Table][Guest1SeatLeft] != SolutionInd2[Guest2Table][Guest2SeatRight]))
+                Diversity++;
+        }
+        
+        int TempValue = 0;
+        // Checking how many guests are seated at the same table for both solutions
+        for (int SeatNum=0; SeatNum<TableSize; SeatNum++){
+            if (SolutionInd1[Guest1Table][SeatNum] != guest){
+                for (int j=0; j<TableSize; j++){
+                    if (SolutionInd2[Guest2Table][j] != guest){
+                        if (SolutionInd1[Guest1Table][SeatNum] == SolutionInd2[Guest2Table][j]){
+                            TempValue++;                        
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return 0;
+}
+
+
+
 
